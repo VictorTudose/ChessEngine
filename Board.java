@@ -1,3 +1,4 @@
+package bpod;
 public class Board {
     public static Board boardInstance;
     Piece[][] board=new Piece[8][8];

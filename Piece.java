@@ -1,3 +1,4 @@
+package bpod;
 public class Piece {
 
     enum pieceType
