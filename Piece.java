@@ -1,44 +1,25 @@
+package bpod;
+
+import bpod.Game.colors;
+
 public class Piece {
 
-    enum pieceType
-    {
-        OPENINGPAWN,
-        PAWN,
-        ROOK,
-        BISHOP,
-        KNIGHT,
-        QUEEN,
-        KING
-    };
+	enum pieceType {
+		OPENINGPAWN, PAWN, ROOK, BISHOP, KNIGHT, QUEEN, KING
+	};
 
-    enum colors
-    {
-        WHITE,
-        BLACK
-    }
+	
 
-    pieceType type;
-    colors color;
-    int x;
-    int y;
+	pieceType type;
+	colors color;
+	int x;
+	int y;
+	
+	public Piece(pieceType type, colors color, int x, int y) {
+		this.type = type;
+		this.color = color;
+		this.x = x;
+		this.y = y;
+	}
 
-    public Piece(pieceType type, Piece.colors color, int x, int y) {
-        this.type = type;
-        this.color = color;
-        this.x = x;
-        this.y = y;
-    }
-
-    public boolean move(int x, int y)
-    {
-        if(!valid(x,y))
-            return false;
-        this.x=x;
-        this.y=y;
-        return true;
-    }
-    public boolean valid(int x,int y)
-    {
-        return false;
-    }
 }
