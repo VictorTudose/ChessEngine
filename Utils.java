@@ -3,12 +3,12 @@ package bpod;
 import java.util.*;
 
 public class Utils {
-	public static String positionsToMove(int oldY, int oldX, int newY, int newX) {
+	public static String positionsToMove(int oldX, int oldY, int newX, int newY) {
 		StringBuilder move = new StringBuilder("move ");
-		move.append(Character.toString(((char) oldX) + 'a' - 1));
-		move.append(Character.toString(((char) oldY) + '0'));
-		move.append(Character.toString(((char) newX) + 'a' - 1));
-		move.append(Character.toString(((char) newY) + '0'));
+		move.append(Character.toString(((char) oldX) + 'a' - 1))
+			.append(Character.toString(((char) oldY) + '0'))
+			.append(Character.toString(((char) newX) + 'a' - 1))
+			.append(Character.toString(((char) newY) + '0'));
 		return move.toString();
 	}
 
@@ -28,42 +28,62 @@ public class Utils {
 	public static boolean pawnMove(Board board, Piece piece) {
 		if(piece != null) {
 			if (board.boardConf[piece.y][piece.x].color == Piece.colors.BLACK) {
-				if (board.attackMove(piece.y - 1, piece.x - 1) == true) {
-					board.makeMove(piece.y, piece.x, piece.y - 1, piece.x - 1);
-					Utils.writeCommand(positionsToMove(piece.y, piece.x, piece.y - 1, piece.x - 1));
-				} else if (board.attackMove(piece.y - 1, piece.x + 1) == true) {
-					board.makeMove(piece.y, piece.x, piece.y - 1, piece.x + 1);
-					Utils.writeCommand(positionsToMove(piece.y, piece.x, piece.y - 1, piece.x + 1));
-				} else if (board.possibleMove(piece.y - 1, piece.x) == true) {
-					board.makeMove(piece.y, piece.x, piece.y - 1, piece.x);
-					Utils.writeCommand(positionsToMove(piece.y, piece.x, piece.y - 1, piece.x));
-				}
-				// avansare
-				else if (piece.y == 1) {
-					board.boardConf[piece.y][piece.x] = new Piece(Piece.pieceType.QUEEN, Piece.colors.BLACK, piece.y, piece.x);
-				} else {
-					return false;
+				if (board.attackMove(piece.x - 1, piece.y - 1) == true) {
+					board.makeMove(piece.x, piece.y, piece.x - 1, piece.y - 1);
+					// daca a promovat in regina, dam resign
+					if (piece.y == 1) {
+						board.boardConf[piece.y][piece.x].type = Piece.pieceType.QUEEN;
+						return false;
+					}
+					return true;
+				} else if (board.attackMove(piece.x + 1, piece.y - 1) == true) {
+					board.makeMove(piece.x, piece.y, piece.x + 1, piece.y - 1);
+					// daca a promovat in regina, dam resign
+					if (piece.y == 1) {
+						board.boardConf[piece.y][piece.x].type = Piece.pieceType.QUEEN;
+						return false;
+					}
+					return true;
+				} else if (board.possibleMove(piece.x, piece.y - 1) == true) {
+					board.makeMove(piece.x, piece.y, piece.x, piece.y - 1);
+					// daca a promovat in regina, dam resign
+					if (piece.y == 1) {
+						board.boardConf[piece.y][piece.x].type = Piece.pieceType.QUEEN;
+						return false;
+					}
+					return true;
 				}
 			} else {
-				if (board.attackMove(piece.y + 1, piece.x - 1) == true) {
-					board.makeMove(piece.y, piece.x, piece.y + 1, piece.x - 1);
-					Utils.writeCommand(positionsToMove(piece.y, piece.x, piece.y + 1, piece.x - 1));
-				} else if (board.attackMove(piece.y + 1, piece.x + 1) == true) {
-					board.makeMove(piece.y, piece.x, piece.y + 1, piece.x + 1);
-					Utils.writeCommand(positionsToMove(piece.y, piece.x, piece.y + 1, piece.x + 1));
-				} else if (board.possibleMove(piece.y + 1, piece.x) == true) {
-					board.makeMove(piece.y, piece.x, piece.y + 1, piece.x);
-					Utils.writeCommand(positionsToMove(piece.y, piece.x, piece.y + 1, piece.x));
-				}
-				// avansare
-				else if (piece.y == 8) {
-					board.boardConf[piece.y][piece.x] = new Piece(Piece.pieceType.QUEEN, Piece.colors.BLACK, piece.y, piece.x);
-				} else {
-					return false;
+				if (board.attackMove(piece.x - 1, piece.y + 1) == true) {
+					board.makeMove(piece.x, piece.y, piece.x - 1, piece.y + 1);
+					// daca a promovat in regina, dam resign
+					if (piece.y == 8) {
+						board.boardConf[piece.y][piece.x].type = Piece.pieceType.QUEEN;
+						return false;
+					}
+					return true;
+				} else if (board.attackMove(piece.x + 1, piece.y + 1) == true) {
+					board.makeMove(piece.x, piece.y, piece.x + 1, piece.y + 1);
+					// daca a promovat in regina, dam resign
+					if (piece.y == 8) {
+						board.boardConf[piece.y][piece.x].type = Piece.pieceType.QUEEN;
+						return false;
+					}
+					return true;
+				} else if (board.possibleMove(piece.x, piece.y + 1) == true) {
+					board.makeMove(piece.x, piece.y, piece.x, piece.y + 1);
+					// daca a promovat in regina, dam resign
+					if (piece.y == 8) {
+						board.boardConf[piece.y][piece.x].type = Piece.pieceType.QUEEN;
+						return false;
+					}
+					return true;
 				}
 			}
-			return true;
+			//nu a reusit sa faca miscare
+			return false;
 		}
+		// piesa e null
 		else
 			return false;
 	}

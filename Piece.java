@@ -12,14 +12,14 @@ public class Piece {
 
 	pieceType type;
 	colors color;
-	int y;
 	int x;
+	int y;
 	
-	public Piece(pieceType type, Piece.colors color, int y, int x) {
+	public Piece(pieceType type, Piece.colors color, int x, int y) {
 		this.type = type;
 		this.color = color;
-		this.y = y;
 		this.x = x;
+		this.y = y;
 	}
 
 }

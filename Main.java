@@ -15,15 +15,11 @@ public class Main {
 
 		BufferedReader input = new BufferedReader(in);
 		
-		//int array[] = Utils.moveToPositions("a2b3");
-		//System.out.println(array[0] + " " + array[1] + " " + array[2] + " " + array[3]);
-		//String string = Utils.positionsToMove(7, 7, 7, 8);
-		//System.out.println(string);
-		//System.exit(0);
+		int array[] = Utils.moveToPositions("d7d6");
 		String line = null;
 		Game game = null;
-		//imi aleg o piesa pe care sa fac mutari
-		Piece piece = null;
+		//imi aleg o piesa cu care fac mutari cat timp este posibil
+		Piece blackPiece = null, whitePiece = null;
 		while (true) {
 			line = input.readLine();
 			if (line.contains("protover 2")) {
@@ -32,21 +28,19 @@ public class Main {
 			else
 			if (line.contains("new")) {
 				game = new Game(Board.getBoardInstance(), states.GO, engineColors.BLACK);
-				// imi aleg un pion
-				piece = game.board.boardConf[7][4];
+				// imi aleg un pion pe care o sa-l mut pana nu mai am mutare valida
+				blackPiece = game.board.boardConf[7][1];
+				whitePiece = game.board.boardConf[2][8];
 			}
 			else
 			if (line.matches("^([a-h][1-8]+)+$")) {
 				// metoda actualizeaza board
 				game.board.opponentMove(line);
 				// metoda calculeaza mutare(cauta mutare valida, altfel da resign)
-				boolean ok = Utils.pawnMove(game.board, piece);
-				
+				boolean ok = Utils.pawnMove(game.board, blackPiece);
 				if(ok == false)
 					Utils.writeCommand("resign");
 			}
 		}
-
 	}
-
 }
