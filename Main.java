@@ -1,95 +1,143 @@
-package bpod;
 
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
 
-import bpod.Game.colors;
-import bpod.Game.states;
 
 public class Main {
 
 	public static void main(String[] args) throws Exception {
-		// TODO Auto-generated method stub
 
 		InputStreamReader in = new InputStreamReader(System.in);
 
 		BufferedReader input = new BufferedReader(in);
-
-		int array[] = Utils.moveToPositions("d7d6");
+		
 		String line = null;
-		Game game = null;
-		long startingTime = 0, currentTime = 0;
-		int pause = 0;
-
-		// imi aleg o piesa cu care fac mutari cat timp este posibil
-		Piece blackPiece = null, whitePiece = null;
+		Game game = null;		
 		while (true) {
 			line = input.readLine();
 			if (line.contains("protover 2")) {
-				Utils.writeCommand("feature sigint=0");
+				System.out.println("feature sigterm=0 sigint=0 san=0");
 			}
 
 			if (line.contains("new")) {
-				game = new Game(Board.getBoardInstance(colors.BLACK), states.GO, colors.BLACK, Utils.fiveMinutes, Utils.fiveMinutes);
+				game = new Game(new Board(Game.colors.BLACK), Game.states.GO, Game.colors.BLACK, Utils.fiveMinutes,
+						Utils.fiveMinutes);
+			}
+
+			if(game != null) {
+				if (line.contains("black")) {
+					game.setColor(Game.colors.BLACK);
+				}
+
+				if (line.contains("white")) {
+					game.setColor(Game.colors.WHITE);
+				}
 				
-				startingTime = System.currentTimeMillis();
-				currentTime = startingTime;
-				// imi aleg un pion pe care o sa-l mut pana nu mai am mutare valida
-				blackPiece = game.board.boardConf[8][2];
-				whitePiece = game.board.boardConf[2][8];
-			}
-
-			if (line.contains("white")) {
-				game.engineColor = colors.BLACK;
-				pause = 1;
-			}
-
-			if (line.contains("black")) {
-				game.engineColor = colors.WHITE;
-				pause = 1;
-			}
-
-			if (line.contains("go")) {
-				pause = 0;
-				currentTime = System.currentTimeMillis();
-				game.setEngineTime(currentTime);
-			}
-
-			if (line.contains("force")) {
-				line = input.readLine();
-				while(!line.equals("go"))
-				{
-					int[] move=Utils.moveToPositions(line);
-					game.board.makeMove(move[0],move[1],move[2],move[3]);
-					line=input.readLine();
+				if (line.contains("go")) {
+					game.state = Game.states.GO;
+					// imi aleg o mutare din cele valide(cea mai buna, folosind negamax cu taietura alpha-beta)
+					// daca nu am mutari, dau resign
+					Pair<Integer, Move> p = negamaxAlphabeta(game.board, 5, Integer.MIN_VALUE, Integer.MAX_VALUE);
+					Move move = p.second;
+					if(move != null) {
+						int oldX = move.oldX, oldY = move.oldY, newX = move.newX, newY = move.newY;
+						game.board.makeMove(move);
+						System.out.println(Utils.positionsToMove(oldX, oldY, newX, newY));	
+					} else {
+						System.out.println("resign");
+					}
+					game.setOpTime(Utils.fiveMinutes);
+					game.setEngineTime(Utils.fiveMinutes);
 				}
-				pause=0;
-				game.setOpTime(Utils.fiveMinutes);
-				game.setEngineTime(Utils.fiveMinutes);
-			}
-
-			if (line.matches("^([a-h][1-8]+)+$")) {
-				// metoda actualizeaza board
-				game.board.opponentMove(line);
-				if(game.board.boardConf[blackPiece.y][blackPiece.x].color!=blackPiece.color) {
-					Utils.writeCommand("resign");
+				
+				if(game.state == Game.states.GO) {
+					if (line.matches("^([a-h][1-8]+)+$")) {
+						// metoda actualizeaza board
+						game.board.opponentMove(line);
+						/*
+						ArrayList<Move> moves = game.board.getAllMoves();
+						for(int i = 0; i < moves.size(); i++) {
+							Move mv = moves.get(i);
+							Utils.showTypeAndColor(mv.piece.type, mv.piece.color);
+							System.out.println("MUTARE" + Utils.positionsToMove(mv.oldX, mv.oldY, mv.newX, mv.newY));
+						}
+						*/
+						Pair<Integer, Move> p = negamaxAlphabeta(game.board, 5, Integer.MIN_VALUE, Integer.MAX_VALUE);
+						Move move = p.second;
+						if(move != null) {
+							int oldX = move.oldX, oldY = move.oldY, newX = move.newX, newY = move.newY;
+							game.board.makeMove(move);
+							System.out.println(Utils.positionsToMove(oldX, oldY, newX, newY));	
+						} else {
+							System.out.println("resign");
+						}
+					}
+					if (line.contains("force")) {
+						game.state = Game.states.FORCE;
+					}
+				} else {
+					if (line.matches("^([a-h][1-8]+)+$")) {
+						game.board.opponentMove(line);
+					}
 				}
-				// metoda calculeaza mutare(cauta mutare valida, altfel da resign)
-				boolean ok = Knight.knightMove(game.board, blackPiece);
-				if (ok == false)
-					Utils.writeCommand("resign");
-			}
-
-			if (game != null) {
+				if (line.contains("time")) {
+					String[] aux = line.split(" ");
+					/*340198 <first : Exception in thread "main" java.lang.NumberFormatException: For input string: "1-0"
+						340199 <first : 	at java.base/java.lang.NumberFormatException.forInputString(NumberFormatException.java:65)
+						340200 <first : 	at Main.main(Main.java:81)->linia de mai jos*/
+					game.setEngineTime(Long.parseLong(aux[1]));
+				}
+				if (line.contains("otim")) {
+					String[] aux = line.split(" ");
+					game.setOpTime(Long.parseLong(aux[1]));
+				}
 				if (game.engineTime <= 0) {
-					Utils.writeCommand("resign");
+					System.out.println("resign");
 				}
-
-				if (pause == 0) {
-					game.engineTime -= (currentTime - System.currentTimeMillis());
+				if (line.contains("quit")) {
+					System.out.println("resign");
 				}
 			}
-
 		}
+	}
+	// Am observat ca uneori se blocheaza pe tura(se duce inainte si inapoi)
+	// Trebuie facute teste
+	// Cum e acum, nu e prea inteligent, dar nici functia de evaluare nu e super buna
+	// Mai ales ca nu avem sahul implementat
+	// Dupa ce o sa fie sahul implementat, cred ca o sa mearga bine
+	// TODO imbunatit/reparat negamax alphabeta
+	
+	// Implementarea de negamax cu alpha-beta pruning 
+	// Intoarce o pereche <x, y> unde
+	// x este cel mai bun scor care poate fi obtinut de jucatorul aflat la mutare,
+	// pe care il recunoastem dupa culoarea care se afla in structura tablei,
+	// iar y este mutarea propriu-zisa
+	static Pair<Integer, Move> negamaxAlphabeta(Board init, int depth, int alfa, int beta) {
+		if (init.ended() || depth == 0) {
+			return new Pair<Integer, Move>(init.eval(init.engineColor), null);
+		}
+		Board clone = init.clone();
+		ArrayList<Move> moves = clone.getAllMoves();
+		Move alfaMove = null;
+		if(moves.size() > 0) {
+			alfaMove = moves.get(moves.size()-1);
+		}
+		for (Move move : moves) {
+			clone.makeMove(move);
+			Board opResponse = clone.clone();
+			opResponse.engineColor = Utils.oppColors(clone.engineColor);
+			int score = -negamaxAlphabeta(opResponse, depth - 1, -beta, -alfa).first;
+			if (score > alfa) {
+				alfa = score;
+				alfaMove = move;
+			}
+			if (alfa >= beta) {
+				break;
+			}
+		}
+		if(alfaMove != null)
+			return new Pair<Integer, Move>(alfa, alfaMove.cloneMove());
+		else
+			return new Pair<Integer, Move>(alfa, null);
 	}
 }
