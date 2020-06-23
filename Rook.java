@@ -26,7 +26,7 @@ public class Rook extends Piece{
     				}
     			}
     			// atac
-        		if(board.attackMove(x, piece.y) == true && ok == 1) {
+        		if(board.attackMove(x, piece.y, piece.color) == true && ok == 1) {
 					moves.add(new Move(piece.x, piece.y, x, piece.y, 
 							new Rook(piece.type, piece.color, piece.x, piece.y, piece.noMoves)));
     			
@@ -47,7 +47,7 @@ public class Rook extends Piece{
     				}
 				}
 				// atac
-        		if(board.attackMove(x, piece.y) == true && ok == 1) {
+        		if(board.attackMove(x, piece.y, piece.color) == true && ok == 1) {
 					moves.add(new Move(piece.x, piece.y, x, piece.y, 
 							new Rook(piece.type, piece.color, piece.x, piece.y, piece.noMoves)));
     			
@@ -68,7 +68,7 @@ public class Rook extends Piece{
     				}
     			}
     			// atac
-        		if(board.attackMove(piece.x, y) == true && ok == 1) {
+        		if(board.attackMove(piece.x, y, piece.color) == true && ok == 1) {
 					moves.add(new Move(piece.x, piece.y, piece.x, y, 
 							new Rook(piece.type, piece.color, piece.x, piece.y, piece.noMoves)));
     			
@@ -90,7 +90,7 @@ public class Rook extends Piece{
     			}
     			
     			// atac
-        		if(board.attackMove(piece.x, y) == true && ok == 1) {
+        		if(board.attackMove(piece.x, y, piece.color) == true && ok == 1) {
 					moves.add(new Move(piece.x, piece.y, piece.x, y, 
 							new Rook(piece.type, piece.color, piece.x, piece.y, piece.noMoves)));	
         		}

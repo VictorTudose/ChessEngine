@@ -1,73 +1,68 @@
 import java.util.ArrayList;
 
-
-public class King extends Piece{
+public class King extends Piece {
 	int noMoves;
-    public King(pieceType type, Game.colors color, int x, int y) {
-        super(type, color, x, y);
-        noMoves = 0;
-    }
-    
-    public King(pieceType type, Game.colors color, int x, int y, int noMoves) {
+
+	public static King black;
+	public static King white;
+
+	public King(pieceType type, Game.colors color, int x, int y) {
+		super(type, color, x, y);
+		noMoves = 0;
+	}
+
+	public King(pieceType type, Game.colors color, int x, int y, int noMoves) {
 		super(type, color, x, y);
 		this.noMoves = noMoves;
 	}
-    //TODO
-	//trebuie adaugata conditia de sah !!! @ Cata
-    //nu poate muta, daca intra in sah
-    //mai sunt niste cazuri speciale pentru en passant de tratat in privinta sahului
-    
-	//sunt rocadele + toate cele 8 pozitii in care poate ajunge un rege de orice culoare
 
-	public static boolean check(Board board,King piece)
-	{
+	public static boolean check(Board board, King piece) {
+//		System.out.println("Culoare rege "+piece.color);
+		int x = piece.x;
+		int y = piece.y;
 
-		int x=piece.x;
-		int y=piece.y;
-
-		if( (board.attackMove(x+1,y+1) && board.boardConf[x+1][y+1] instanceof Knight )
-			||(board.attackMove(x+1,y-1) && board.boardConf[x+1][y-1] instanceof Knight )
-			|| (board.attackMove(x-1,y+1) && board.boardConf[x-1][y+1] instanceof Knight )
-			|| (board.attackMove(x-1,y-1) && board.boardConf[x-1][y-1] instanceof Knight )
-			|| (board.attackMove(x-2,y+1) && board.boardConf[x-2][y+1] instanceof Knight )
-			|| (board.attackMove(x-2,y-1) && board.boardConf[x-2][y-1] instanceof Knight )
-			|| (board.attackMove(x+2,y+1) && board.boardConf[x+2][y+1] instanceof Knight )
-			|| (board.attackMove(x+2,y-1) && board.boardConf[x+2][y-1] instanceof Knight )
-		)
+		if ((board.attackMove(x + 1, y + 2, piece.color) && board.boardConf[y + 2][x + 1] instanceof Knight)
+				|| (board.attackMove(x + 1, y - 2, piece.color) && board.boardConf[y - 2][x + 1] instanceof Knight)
+				|| (board.attackMove(x - 1, y + 2, piece.color) && board.boardConf[y + 2][x - 1] instanceof Knight)
+				|| (board.attackMove(x - 1, y - 2, piece.color) && board.boardConf[y - 2][x - 1] instanceof Knight)
+				|| (board.attackMove(x - 2, y + 1, piece.color) && board.boardConf[y + 1][x - 2] instanceof Knight)
+				|| (board.attackMove(x - 2, y - 1, piece.color) && board.boardConf[y - 1][x - 2] instanceof Knight)
+				|| (board.attackMove(x + 2, y + 1, piece.color) && board.boardConf[y + 1][x + 2] instanceof Knight)
+				|| (board.attackMove(x + 2, y - 1, piece.color) && board.boardConf[y - 1][x + 2] instanceof Knight)) {
 			return true;
+		}
 
-		for(int xi=x;xi<=8 && (board.boardConf[xi][y]!=null && board.boardConf[xi][y].color==piece.color); xi++) {
-			if (board.attackMove(xi, y) && (board.boardConf[xi][y] instanceof Rook || board.boardConf[xi][y] instanceof Queen)) {
+		for (int xi = x+1; xi <= 8; xi++) {
+			if(board.friendlyPiece(xi, y, piece.color)) {
+				break;
+			} else 
+		
+			if (board.attackMove(xi, y, piece.color) && (board.boardConf[y][xi] instanceof Rook || board.boardConf[y][xi] instanceof Queen)) {
 				return true;
 			}
 		}
 
-		for(int xi=x;xi>=1 && (board.boardConf[xi][y]!=null && board.boardConf[xi][y].color==piece.color); xi--) {
-			if (board.attackMove(xi, y) && (board.boardConf[xi][y] instanceof Rook || board.boardConf[xi][y] instanceof Queen)) {
+		for (int xi = x-1; xi >= 1; xi--) {
+			if(board.friendlyPiece(xi, y, piece.color)) {
+				break;
+			} else 
+		
+			if (board.attackMove(xi, y, piece.color) && (board.boardConf[y][xi] instanceof Rook || board.boardConf[y][xi] instanceof Queen)) {
+				return true;
+			}
+		}
+		
+
+		for (int yi = y+1; yi <= 8 && (board.boardConf[yi][x] == null
+				|| (board.boardConf[yi][x] != null && board.attackMove(x, yi, piece.color))); yi++) {
+			if ((board.boardConf[yi][x] instanceof Rook || board.boardConf[yi][x] instanceof Queen)) {
 				return true;
 			}
 		}
 
-		for(int xi=x;xi<=8 && (board.boardConf[xi][y]!=null && board.boardConf[xi][y].color==piece.color); xi++) {
-			if (board.attackMove(xi, y) && (board.boardConf[xi][y] instanceof Rook || board.boardConf[xi][y] instanceof Queen)) {
-				return true;
-			}
-		}
-
-		for(int xi=x;xi>=1 && (board.boardConf[xi][y]!=null && board.boardConf[xi][y].color==piece.color); xi--) {
-			if (board.attackMove(xi, y) && (board.boardConf[xi][y] instanceof Rook || board.boardConf[xi][y] instanceof Queen)) {
-				return true;
-			}
-		}
-
-		for(int yi=x;yi<=8 && (board.boardConf[x][yi]!=null && board.boardConf[x][yi].color==piece.color); yi++) {
-			if (board.attackMove(x, yi) && (board.boardConf[x][yi] instanceof Rook || board.boardConf[x][yi] instanceof Queen)) {
-				return true;
-			}
-		}
-
-		for(int yi=x;yi>=1 && (board.boardConf[x][yi]!=null && board.boardConf[x][yi].color==piece.color); yi--) {
-			if (board.attackMove(x, yi) && (board.boardConf[x][yi] instanceof Rook || board.boardConf[x][yi] instanceof Queen)) {
+		for (int yi = y-1; yi >= 1 && (board.boardConf[yi][x] == null
+				|| (board.boardConf[yi][x] != null && (board.attackMove(x, yi, piece.color)))); yi--) {
+			if (board.boardConf[yi][x] instanceof Rook || board.boardConf[yi][x] instanceof Queen) {
 				return true;
 			}
 		}
@@ -75,282 +70,321 @@ public class King extends Piece{
 		int xi;
 		int yi;
 
-		for(xi=x, yi=y;xi>=1 && yi>=1;xi--,yi--)
-		{
-			if (board.attackMove(xi, yi) && (board.boardConf[xi][yi] instanceof Bishop || board.boardConf[xi][yi] instanceof Queen)) {
+		for (xi = x-1, yi = y-1; xi >= 1 && yi >= 1 && (board.boardConf[yi][xi] == null
+				|| (board.boardConf[yi][xi] != null && board.attackMove(xi, yi, piece.color))); xi--, yi--) {
+			if (board.boardConf[yi][xi] instanceof Bishop || board.boardConf[yi][xi] instanceof Queen) {
 				return true;
 			}
 		}
 
-		for(xi=x, yi=y;xi>=1 && yi<=8;xi--,yi++)
-		{
-			if (board.attackMove(xi, yi) && (board.boardConf[xi][yi] instanceof Bishop || board.boardConf[xi][yi] instanceof Queen)) {
+		for (xi = x-1, yi = y+1; xi >= 1 && yi <= 8 && (board.boardConf[yi][xi] == null
+				|| (board.boardConf[yi][xi] != null && board.attackMove(xi, yi, piece.color))); xi--, yi++) {
+			if (board.boardConf[yi][xi] instanceof Bishop || board.boardConf[yi][xi] instanceof Queen) {
 				return true;
 			}
 		}
 
-		for(xi=x, yi=y;xi<=8 && yi>=1;xi++,yi--)
-		{
-			if (board.attackMove(xi, yi) && (board.boardConf[xi][yi] instanceof Bishop || board.boardConf[xi][yi] instanceof Queen)) {
+		for (xi = x+1, yi = y-1; xi <= 8 && yi >= 1 && (board.boardConf[yi][xi] == null
+				|| (board.boardConf[yi][xi] != null && (board.attackMove(xi, yi, piece.color)))); xi++, yi--) {
+			if (board.boardConf[yi][xi] instanceof Bishop || board.boardConf[yi][xi] instanceof Queen) {
 				return true;
 			}
 		}
 
-		for(xi=x, yi=y;xi<=8 && yi<=8;xi++,yi++)
-		{
-			if (board.attackMove(xi, yi) && (board.boardConf[xi][yi] instanceof Bishop || board.boardConf[xi][yi] instanceof Queen)) {
+		for (xi = x+1, yi = y+1; xi <= 8 && yi <= 8 && (board.boardConf[yi][xi] == null
+				|| (board.boardConf[yi][xi] != null && board.attackMove(xi, yi, piece.color))); xi++, yi++) {
+			if (board.boardConf[yi][xi] instanceof Bishop || board.boardConf[yi][xi] instanceof Queen) {
 				return true;
 			}
 		}
 
-		if((board.attackMove(x+1,y+1) && board.boardConf[x+1][y+1] instanceof Knight )
-			||(board.attackMove(x+1,y-1) && board.boardConf[x+1][y-1] instanceof Knight )
-			||(board.attackMove(x-1,y+1) && board.boardConf[x-1][y+1] instanceof Knight )
-			||(board.attackMove(x+1,y-1) && board.boardConf[x+1][y-1] instanceof Knight )
-			||(board.attackMove(x,y+1) && board.boardConf[x][y+1] instanceof Knight )
-			||(board.attackMove(x,y-1) && board.boardConf[x][y-1] instanceof Knight )
-			||(board.attackMove(x+1,y) && board.boardConf[x+1][y] instanceof Knight )
-			||(board.attackMove(x-1,y) && board.boardConf[x-1][y] instanceof Knight )
-			||(board.attackMove(x-1,y+1) && board.boardConf[x+1][y+1] instanceof Pawn )
-			||(board.attackMove(x-1,y-1) && board.boardConf[x+1][y-1] instanceof Pawn  )
-		)
-			return true;
+		if (piece.color == Game.colors.BLACK) {
+			if (((board.attackMove(x - 1, y - 1, piece.color) && board.boardConf[y - 1][x - 1] instanceof Pawn)
+					|| (board.attackMove(x + 1, y - 1, piece.color) && board.boardConf[y - 1][x + 1] instanceof Pawn))) {
+				return true;
+			}
+		}
 
+		if (piece.color == Game.colors.WHITE) {
+			if (((board.attackMove(x - 1, y + 1, piece.color) && board.boardConf[y + 1][x - 1] instanceof Pawn)
+					|| (board.attackMove(x + 1, y + 1, piece.color) && board.boardConf[y + 1][x + 1] instanceof Pawn))) {
+				return true;
+			}
+		}
 
 		return false;
 	}
 
-	public static boolean checkmate(Board board,King piece)
-	{
-		boolean ok=true;
-		if(check(board,piece))
-		{
+	public static boolean wrap_check(Board board, King piece, int dx, int dy) {
+		boolean ok;
 
-			if(board.boardConf[piece.x][piece.y+1]==null)
-			{
-				board.boardConf[piece.x][piece.y+1]=piece;
-				board.boardConf[piece.x][piece.y]=null;
-				piece.y=piece.y+1;
-				ok=check(board,piece);
-				board.boardConf[piece.x][piece.y-1]=piece;
-				board.boardConf[piece.x][piece.y]=null;
-				piece.y=piece.y-1;
-			}
+		if (piece.x + dx < 1 || piece.x + dx > 8 || piece.y + dy < 1 || piece.y + dy > 8)
+			return false;
 
-			if(ok&& board.boardConf[piece.x][piece.y-1]==null)
-			{
-				board.boardConf[piece.x][piece.y-1]=piece;
-				board.boardConf[piece.x][piece.y]=null;
-				piece.y=piece.y-1;
-				ok=check(board,piece);
-				board.boardConf[piece.x][piece.y+1]=piece;
-				board.boardConf[piece.x][piece.y]=null;
-				piece.y=piece.y+1;
-			}
+		board.boardConf[piece.y + dy][piece.x + dx] = piece;
+		board.boardConf[piece.y][piece.x] = null;
+		piece.x = piece.x + dx;
+		piece.y = piece.y + dy;
+		ok = check(board, piece);
+		board.boardConf[piece.y - dy][piece.x - dx] = piece;
+		board.boardConf[piece.y][piece.x] = null;
+		piece.x = piece.x - dx;
+		piece.y = piece.y - dy;
 
-			if(ok&& board.boardConf[piece.x+1][piece.y]==null)
-			{
-				board.boardConf[piece.x+1][piece.y]=piece;
-				board.boardConf[piece.x][piece.y]=null;
-				piece.y=piece.x-1;
-				ok=check(board,piece);
-				board.boardConf[piece.x-1][piece.y]=piece;
-				board.boardConf[piece.x][piece.y]=null;
-				piece.y=piece.x+1;
+		return ok;
+	}
+
+	public static boolean checkmate(Board board, King piece) {
+		boolean ok = true;
+		if (check(board, piece)) {
+
+			if (ok && board.possibleMove(piece.x, piece.y+1)) {
+				ok = wrap_check(board, piece, 0, 1);
 			}
 
-			if(ok&& board.boardConf[piece.x-1][piece.y]==null)
-			{
-				board.boardConf[piece.x-1][piece.y]=piece;
-				board.boardConf[piece.x][piece.y]=null;
-				piece.y=piece.x-1;
-				ok=check(board,piece);
-				board.boardConf[piece.x+1][piece.y]=piece;
-				board.boardConf[piece.x][piece.y]=null;
-				piece.y=piece.x+1;
+			if (ok && board.possibleMove(piece.x, piece.y-1)) {
+				ok = wrap_check(board, piece, 0, -1);
 			}
 
-			if(board.boardConf[piece.x+1][piece.y+1]==null)
-			{
-				board.boardConf[piece.x+1][piece.y+1]=piece;
-				board.boardConf[piece.x][piece.y]=null;
-				piece.y=piece.y+1;
-				piece.x=piece.x+1;
-				ok=check(board,piece);
-				board.boardConf[piece.x-1][piece.y-1]=piece;
-				board.boardConf[piece.x][piece.y]=null;
-				piece.y=piece.y-1;
-				piece.x=piece.x-1;
-			}
-			if(board.boardConf[piece.x+1][piece.y-1]==null)
-			{
-				board.boardConf[piece.x+1][piece.y-1]=piece;
-				board.boardConf[piece.x][piece.y]=null;
-				piece.y=piece.y-1;
-				piece.x=piece.x+1;
-				ok=check(board,piece);
-				board.boardConf[piece.x-1][piece.y+1]=piece;
-				board.boardConf[piece.x][piece.y]=null;
-				piece.y=piece.y+1;
-				piece.x=piece.x-1;
-			}
-			if(board.boardConf[piece.x-1][piece.y+1]==null)
-			{
-				board.boardConf[piece.x-1][piece.y+1]=piece;
-				board.boardConf[piece.x][piece.y]=null;
-				piece.y=piece.y+1;
-				piece.x=piece.x-1;
-				ok=check(board,piece);
-				board.boardConf[piece.x+1][piece.y-1]=piece;
-				board.boardConf[piece.x][piece.y]=null;
-				piece.y=piece.y-1;
-				piece.x=piece.x+1;
-			}
-			if(board.boardConf[piece.x-1][piece.y-1]==null)
-			{
-				board.boardConf[piece.x-1][piece.y-1]=piece;
-				board.boardConf[piece.x][piece.y]=null;
-				piece.y=piece.y-1;
-				piece.x=piece.x-1;
-				ok=check(board,piece);
-				board.boardConf[piece.x+1][piece.y+1]=piece;
-				board.boardConf[piece.x][piece.y]=null;
-				piece.y=piece.y+1;
-				piece.x=piece.x+1;
+			if (ok && board.possibleMove(piece.x + 1, piece.y)) {
+				ok = wrap_check(board, piece, 1, 0);
 			}
 
+			if (ok && board.possibleMove(piece.x - 1,piece.y)){
+				ok = wrap_check(board, piece, -1, 0);
+			}
 
+			if (ok && board.possibleMove(piece.x + 1, piece.y + 1)) {
+				ok = wrap_check(board, piece, 1, 1);
+			}
+
+			if (ok && board.possibleMove(piece.x + 1, piece.y - 1)) {
+				ok = wrap_check(board, piece, 1, -1);
+			}
+
+			if (ok && board.possibleMove(piece.x - 1, piece.y + 1)) {
+				ok = wrap_check(board, piece, -1, 1);
+			}
+
+			if (ok && board.possibleMove(piece.x - 1, piece.y - 1)) {
+				ok = wrap_check(board, piece, -1, -1);
+			}
 		}
+
 		return ok;
 	}
 
 	public static ArrayList<Move> kingMoves(Board board, King piece) {
 		ArrayList<Move> moves = new ArrayList<Move>();
-		
-		if(piece != null && board.engineColor == piece.color) {	
+
+		boolean check=false;
+		if (check(board, piece))
+			check=true;
+
+		if (piece != null && board.engineColor == piece.color) {
 			// rocade
 			// tratam rocadele pentru alb
-			if(piece.color == Game.colors.WHITE && piece.y == 1 && piece.x == 5 && piece.noMoves == 0) {
+			if (piece.color == Game.colors.WHITE && piece.y == 1 && piece.x == 5 && piece.noMoves == 0) {
 				// tratam rocada mica
-				if((board.boardConf[1][8] instanceof Rook) && ((Rook)board.boardConf[1][8]).noMoves == 0
-						&& board.boardConf[1][8].color == Game.colors.WHITE
-						&& board.boardConf[1][6] == null && board.boardConf[1][7] == null) {
-					moves.add(new Move(piece.x, piece.y, 1, 7, 1, 6,
-							new King(piece.type, piece.color, piece.x, piece.y, piece.noMoves)));
+				if ((board.boardConf[1][8] instanceof Rook) && ((Rook) board.boardConf[1][8]).noMoves == 0
+						&& board.boardConf[1][8].color == Game.colors.WHITE && board.boardConf[1][6] == null
+						&& board.boardConf[1][7] == null) {
+
+					if (wrap_check(board, piece, 1, 0) && wrap_check(board, piece, 2, 0))
+						moves.add(new Move(piece.x, piece.y, 1, 7, 1, 6,
+								new King(piece.type, piece.color, piece.x, piece.y, piece.noMoves)));
 				}
 				// tratam rocada mare
-				if((board.boardConf[1][1] instanceof Rook) && ((Rook)board.boardConf[1][1]).noMoves == 0
-						&& board.boardConf[1][1].color == Game.colors.WHITE
-						&& board.boardConf[1][2] == null && board.boardConf[1][3] == null && board.boardConf[1][4] == null) {
-					moves.add(new Move(piece.x, piece.y, 1, 3, 1, 4,
-							new King(piece.type, piece.color, piece.x, piece.y, piece.noMoves)));
-				}	
+				if ((board.boardConf[1][1] instanceof Rook) && ((Rook) board.boardConf[1][1]).noMoves == 0
+						&& board.boardConf[1][1].color == Game.colors.WHITE && board.boardConf[1][2] == null
+						&& board.boardConf[1][3] == null && board.boardConf[1][4] == null) {
+					if (wrap_check(board, piece, -1, 0) && wrap_check(board, piece, -2, 0))
+						moves.add(new Move(piece.x, piece.y, 1, 3, 1, 4,
+								new King(piece.type, piece.color, piece.x, piece.y, piece.noMoves)));
+				}
 			}
-			
+
 			// tratam rocadele pentru negru
-			if(piece.color == Game.colors.BLACK && piece.y == 8 && piece.x == 5 && piece.noMoves == 0) {
+			if (piece.color == Game.colors.BLACK && piece.y == 8 && piece.x == 5 && piece.noMoves == 0) {
 				// tratam rocada mica
-				if((board.boardConf[8][8] instanceof Rook) && ((Rook)board.boardConf[8][8]).noMoves == 0
-						&& board.boardConf[8][8].color == Game.colors.BLACK
-						&& board.boardConf[8][6] == null && board.boardConf[8][7] == null) {
-					moves.add(new Move(piece.x, piece.y, 8, 7, 8, 6,
-							new King(piece.type, piece.color, piece.x, piece.y, piece.noMoves)));
+				if ((board.boardConf[8][8] instanceof Rook) && ((Rook) board.boardConf[8][8]).noMoves == 0
+						&& board.boardConf[8][8].color == Game.colors.BLACK && board.boardConf[8][6] == null
+						&& board.boardConf[8][7] == null) {
+					if (wrap_check(board, piece, 1, 0) && wrap_check(board, piece, 2, 0))
+						moves.add(new Move(piece.x, piece.y, 8, 7, 8, 6,
+								new King(piece.type, piece.color, piece.x, piece.y, piece.noMoves)));
 				}
 				// tratam rocada mare
-				if((board.boardConf[8][1] instanceof Rook) && ((Rook)board.boardConf[8][1]).noMoves == 0
-						&& board.boardConf[8][1].color == Game.colors.BLACK
-						&& board.boardConf[8][2] == null && board.boardConf[8][3] == null && board.boardConf[8][4] == null) {
-					moves.add(new Move(piece.x, piece.y, 8, 3, 8, 4,
-							new King(piece.type, piece.color, piece.x, piece.y, piece.noMoves)));
+				if ((board.boardConf[8][1] instanceof Rook) && ((Rook) board.boardConf[8][1]).noMoves == 0
+						&& board.boardConf[8][1].color == Game.colors.BLACK && board.boardConf[8][2] == null
+						&& board.boardConf[8][3] == null && board.boardConf[8][4] == null) {
+					if (wrap_check(board, piece, -1, 0) && wrap_check(board, piece, -2, 0))
+						moves.add(new Move(piece.x, piece.y, 8, 3, 8, 4,
+								new King(piece.type, piece.color, piece.x, piece.y, piece.noMoves)));
 				}
 			}
-			
-			//atacuri
-			if (board.attackMove(piece.x, piece.y - 1) == true) {
-				moves.add(new Move(piece.x, piece.y, piece.x, piece.y - 1, 
+
+			// miscari
+
+			// TODO verify
+
+			if (board.possibleMove(piece.x, piece.y - 1) || board.attackMove(piece.x, piece.y-1,piece.color)) {
+				if(!check || !wrap_check(board,piece,0,-1) )
+				moves.add(new Move(piece.x, piece.y, piece.x, piece.y-1,
 						new King(piece.type, piece.color, piece.x, piece.y, piece.noMoves)));
 			}
-			
-			if (board.attackMove(piece.x, piece.y + 1) == true) {
-				moves.add(new Move(piece.x, piece.y, piece.x, piece.y + 1, 
-						new King(piece.type, piece.color, piece.x, piece.y, piece.noMoves)));
-			}	
-				
-			if (board.attackMove(piece.x - 1, piece.y) == true) {
-				moves.add(new Move(piece.x, piece.y, piece.x - 1, piece.y, 
+
+			if (board.possibleMove(piece.x, piece.y + 1) || board.attackMove(piece.x, piece.y + 1,piece.color)) {
+				if(!check || !wrap_check(board,piece,0,1) )
+				moves.add(new Move(piece.x, piece.y, piece.x, piece.y + 1,
 						new King(piece.type, piece.color, piece.x, piece.y, piece.noMoves)));
 			}
-			
-			if (board.attackMove(piece.x - 1, piece.y - 1) == true) {
-				moves.add(new Move(piece.x, piece.y, piece.x, piece.y - 1, 
-						new King(piece.type, piece.color, piece.x, piece.y, piece.noMoves)));
+
+			if (board.possibleMove(piece.x+1, piece.y) || board.attackMove(piece.x+1, piece.y,piece.color)) {
+				if(!check || !wrap_check(board,piece,1,0) )
+					moves.add(new Move(piece.x, piece.y, piece.x+1, piece.y ,
+							new King(piece.type, piece.color, piece.x, piece.y, piece.noMoves)));
 			}
-			
-			if (board.attackMove(piece.x - 1, piece.y + 1) == true) {
-				moves.add(new Move(piece.x, piece.y, piece.x - 1, piece.y + 1, 
-						new King(piece.type, piece.color, piece.x, piece.y, piece.noMoves)));
+
+			if (board.possibleMove(piece.x-1, piece.y) || board.attackMove(piece.x-1, piece.y,piece.color)) {
+				if(!check || !wrap_check(board,piece,-1,0) )
+					moves.add(new Move(piece.x, piece.y, piece.x-1, piece.y ,
+							new King(piece.type, piece.color, piece.x, piece.y, piece.noMoves)));
 			}
-			
-			if (board.attackMove(piece.x + 1, piece.y) == true) {
-				moves.add(new Move(piece.x, piece.y, piece.x - 1, piece.y, 
-						new King(piece.type, piece.color, piece.x, piece.y, piece.noMoves)));
+
+			if (board.possibleMove(piece.x+1, piece.y - 1) || board.attackMove(piece.x+1, piece.y-1,piece.color)) {
+				if(!check || !wrap_check(board,piece,1,-1) )
+					moves.add(new Move(piece.x, piece.y, piece.x+1, piece.y-1,
+							new King(piece.type, piece.color, piece.x, piece.y, piece.noMoves)));
 			}
-				
-			if (board.attackMove(piece.x + 1, piece.y - 1) == true) {
-				moves.add(new Move(piece.x, piece.y, piece.x + 1, piece.y - 1, 
-						new King(piece.type, piece.color, piece.x, piece.y, piece.noMoves)));
-			}	
-				
-			if (board.attackMove(piece.x + 1, piece.y + 1) == true) {
-				moves.add(new Move(piece.x, piece.y, piece.x + 1, piece.y + 1, 
-						new King(piece.type, piece.color, piece.x, piece.y, piece.noMoves)));
+
+			if (board.possibleMove(piece.x-1, piece.y + 1) || board.attackMove(piece.x-1, piece.y + 1,piece.color)) {
+				if(!check || !wrap_check(board,piece,-1,1) )
+					moves.add(new Move(piece.x, piece.y, piece.x-1, piece.y + 1,
+							new King(piece.type, piece.color, piece.x, piece.y, piece.noMoves)));
 			}
-			
-			//miscari
-			if (board.possibleMove(piece.x, piece.y - 1) == true) {
-				moves.add(new Move(piece.x, piece.y, piece.x, piece.y - 1, 
-						new King(piece.type, piece.color, piece.x, piece.y, piece.noMoves)));
+
+			if (board.possibleMove(piece.x+1, piece.y-1) || board.attackMove(piece.x+1, piece.y-1,piece.color)) {
+				if(!check || !wrap_check(board,piece,1,-1) )
+					moves.add(new Move(piece.x, piece.y, piece.x+1, piece.y-1 ,
+							new King(piece.type, piece.color, piece.x, piece.y, piece.noMoves)));
 			}
-			
-			if (board.possibleMove(piece.x, piece.y + 1) == true) {
-				moves.add(new Move(piece.x, piece.y, piece.x, piece.y + 1, 
-						new King(piece.type, piece.color, piece.x, piece.y, piece.noMoves)));
-			}	
-				
-			if (board.possibleMove(piece.x - 1, piece.y) == true) {
-				moves.add(new Move(piece.x, piece.y, piece.x - 1, piece.y, 
-						new King(piece.type, piece.color, piece.x, piece.y, piece.noMoves)));
+
+			if (board.possibleMove(piece.x-1, piece.y-1) || board.attackMove(piece.x-1, piece.y-1,piece.color)) {
+				if(!check || !wrap_check(board,piece,-1,-1) )
+					moves.add(new Move(piece.x, piece.y, piece.x-1, piece.y-1 ,
+							new King(piece.type, piece.color, piece.x, piece.y, piece.noMoves)));
 			}
-			
-			if (board.possibleMove(piece.x - 1, piece.y - 1) == true) {
-				moves.add(new Move(piece.x, piece.y, piece.x - 1, piece.y - 1, 
-						new King(piece.type, piece.color, piece.x, piece.y, piece.noMoves)));
-			}
-			
-			if (board.possibleMove(piece.x - 1, piece.y + 1) == true) {
-				moves.add(new Move(piece.x, piece.y, piece.x - 1, piece.y + 1, 
-						new King(piece.type, piece.color, piece.x, piece.y, piece.noMoves)));
-			}
-			
-			if (board.possibleMove(piece.x + 1, piece.y)) {
-				moves.add(new Move(piece.x, piece.y, piece.x + 1, piece.y, 
-						new King(piece.type, piece.color, piece.x, piece.y, piece.noMoves)));
-			}
-				
-			if (board.possibleMove(piece.x + 1, piece.y - 1)) {
-				moves.add(new Move(piece.x, piece.y, piece.x + 1, piece.y - 1, 
-						new King(piece.type, piece.color, piece.x, piece.y, piece.noMoves)));
-			}	
-				
-			if (board.possibleMove(piece.x + 1, piece.y + 1) == true) {
-				moves.add(new Move(piece.x, piece.y, piece.x + 1, piece.y + 1, 
-						new King(piece.type, piece.color, piece.x, piece.y, piece.noMoves)));
-			}	
+
 		}
 		// returnam posibilele mutari
 		return moves;
 	}
-	public static King clone (King piece) {
+
+	public static King clone(King piece) {
 		return new King(piece.type, piece.color, piece.x, piece.y, piece.noMoves);
 	}
+
+	public int num_of_defences(Board board) {
+		int x = this.x;
+		int y = this.y;
+
+		int res = 0;
+
+		for (int xi = x; xi <= 8; xi++) {
+			if (board.boardConf[y][xi] != null && board.boardConf[y][xi].color == this.color) {
+				res++;
+				break;
+			}
+		}
+		for (int xi = x; xi >= 1; xi--) {
+			if (board.boardConf[y][xi] != null && board.boardConf[y][xi].color == this.color) {
+				res++;
+				break;
+			}
+		}
+		for (int yi = y; yi <= 8; yi++) {
+			if (board.boardConf[yi][x] != null && board.boardConf[yi][x].color == this.color) {
+				res++;
+				break;
+			}
+		}
+		for (int yi = y; yi >= 1; yi--) {
+			if (board.boardConf[yi][x] != null && board.boardConf[yi][x].color == this.color) {
+				res++;
+				break;
+			}
+		}
+
+		int xi;
+		int yi;
+
+		for (xi = x, yi = y; xi <= 8 && yi <= 8; xi++, yi++) {
+			if (board.boardConf[yi][xi] != null && board.boardConf[yi][xi].color == this.color) {
+				res++;
+				break;
+			}
+		}
+		for (xi = x, yi = y; xi <= 8 && yi >= 1; xi++, yi--) {
+			if (board.boardConf[yi][xi] != null && board.boardConf[yi][xi].color == this.color) {
+				res++;
+				break;
+			}
+		}
+		for (xi = x, yi = y; xi >= 1 && yi <= 8; xi--, yi++) {
+			if (board.boardConf[yi][xi] != null && board.boardConf[yi][xi].color == this.color) {
+				res++;
+				break;
+			}
+		}
+		for (xi = x, yi = y; xi >= 1 && yi >= 1; xi--, yi--) {
+			if (board.boardConf[yi][xi] != null && board.boardConf[yi][xi].color == this.color) {
+				res++;
+				break;
+			}
+		}
+
+		for (int dx = -2; dx <= 2; dx++) {
+			x += dx;
+			if (!(1 <= x && x <= 8)) {
+				x -= dx;
+				continue;
+			}
+			if (dx == -2 || dx == 2) {
+				y += 1;
+				if (1 <= y && y <= 8) {
+					if (board.boardConf[y][x] != null && board.boardConf[y][x].color == this.color) {
+						res++;
+					}
+				}
+				y -= 2;
+				if (1 <= y && y <= 8) {
+					if (board.boardConf[y][x] != null && board.boardConf[y][x].color == this.color) {
+						res++;
+					}
+				}
+				y += 2;
+			}
+			if (dx == -1 || dx == 1) {
+				y += 2;
+				if (1 <= y && y <= 8) {
+					if (board.boardConf[y][x] != null && board.boardConf[y][x].color == this.color) {
+						res++;
+					}
+				}
+				y -= 4;
+				if (1 <= y && y <= 8) {
+					if (board.boardConf[y][x] != null && board.boardConf[y][x].color == this.color) {
+						res++;
+					}
+				}
+				y += 4;
+			}
+			x -= dx;
+		}
+
+		return res;
+
+	}
+
 }

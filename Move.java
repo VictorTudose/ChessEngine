@@ -9,6 +9,7 @@ public class Move {
 	int enPassantY;
 	int castlingRookX;
 	int castlingRookY;
+
 	// mutare normala
 	public Move(int oldX, int oldY, int newX, int newY, Piece piece) {
 		super();

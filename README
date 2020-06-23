@@ -1,0 +1,33 @@
+Etapa 3
+Echipa: BluePawnOfDeath
+
+-> Instructiuni de compilare
+	Pentru compilare
+		make build
+	In cazul in care nu merge
+		* instalati java
+			sudo apt install default-jdk
+	Pentru rularea engine-ului
+		make run
+			nu pornim xboard cu make run
+->Membrii:
+	-> Serboi Florea-Dan(C)		325 CB
+	-> Tudose Victor		323 CB
+	-> Chiru Catalin-Mihail		322 CB
+	
+->Detalii despre structura proiectului:
+	->Algoritm ales :
+		->Negamax
+			->folosing Alpha-Beta pruning
+	->Euristica aleasa tine cont de
+		-> numarul de piese
+		-> daca ia sah
+	Functii principale
+		->Main.negamaxAlphaBeta()
+->Detalii despre abordarea algoritmică a etapei:
+	Am ales Negamax
+	Am folosit schema clasica de valori pt piese 1:3:5:5:9.
+->Surse de inspirație
+	-> carti despre sah
+	-> regulile sahului
+	Fata de etapa trecuta am reparat bug-ul din negamax, dar raman valabile bug-urile in checkmate si altele. Astfel, avand in vedere euristica slaba, am ales depth-ul 1 pentru negamax pentru a fi lacom in ceea ce priveste luatul de piese, si in caz ca trebuie sa iasa din sah, sa o faca.

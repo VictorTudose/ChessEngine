@@ -18,7 +18,7 @@ public class Queen extends Piece{
     				}
     			}
         		// atac
-        		if(board.attackMove(x, piece.y) == true && ok == 1) {
+        		if(board.attackMove(x, piece.y, piece.color) == true && ok == 1) {
 					moves.add(new Move(piece.x, piece.y, x, piece.y, 
 							new Queen(piece.type, piece.color, piece.x, piece.y)));
         		}
@@ -37,7 +37,7 @@ public class Queen extends Piece{
     				}
 				}
         		// atac
-        		if(board.attackMove(x, piece.y) == true && ok == 1) {
+        		if(board.attackMove(x, piece.y, piece.color) == true && ok == 1) {
 					moves.add(new Move(piece.x, piece.y, x, piece.y, 
 							new Queen(piece.type, piece.color, piece.x, piece.y)));
         		}
@@ -56,7 +56,7 @@ public class Queen extends Piece{
     				}
     			}
         		// atac
-        		if(board.attackMove(piece.x, y) == true && ok == 1) {
+        		if(board.attackMove(piece.x, y, piece.color) == true && ok == 1) {
 					moves.add(new Move(piece.x, piece.y, piece.x, y, 
 							new Queen(piece.type, piece.color, piece.x, piece.y)));
         		}
@@ -75,7 +75,7 @@ public class Queen extends Piece{
     				}
     			}
         		// atac
-        		if(board.attackMove(piece.x, y) == true && ok == 1) {
+        		if(board.attackMove(piece.x, y, piece.color) == true && ok == 1) {
 					moves.add(new Move(piece.x, piece.y, piece.x, y, 
 							new Queen(piece.type, piece.color, piece.x, piece.y)));
         		}
@@ -95,7 +95,7 @@ public class Queen extends Piece{
         			}
         		}
         		// atac
-        		if(board.attackMove(x, y) == true && ok == 1) {
+        		if(board.attackMove(x, y, piece.color)  == true && ok == 1) {
 					moves.add(new Move(piece.x, piece.y, x, y, 
 							new Queen(piece.type, piece.color, piece.x, piece.y)));
         		}
@@ -114,7 +114,7 @@ public class Queen extends Piece{
         			}
             	}
         		// atac
-        		if(board.attackMove(x, y) == true && ok == 1) {
+        		if(board.attackMove(x, y, piece.color)  == true && ok == 1) {
 					moves.add(new Move(piece.x, piece.y, x, y, 
 							new Queen(piece.type, piece.color, piece.x, piece.y)));
         		}
@@ -129,10 +129,12 @@ public class Queen extends Piece{
         	for(int x = piece.x - 1, y = piece.y - 1; x >= 1 && y >= 1; x--, y--) {
             	int ok = 1;
             	for(int i = piece.x - 1, j = piece.y - 1; i > x && j > x; i--, j--) {
-            		ok = 0;
+        			if(board.boardConf[j][i] != null) {
+        				ok = 0;
+        			}
             	}
         		// atac
-        		if(board.attackMove(x, y) == true && ok == 1) {
+        		if(board.attackMove(x, y, piece.color)  == true && ok == 1) {
 					moves.add(new Move(piece.x, piece.y, x, y, 
 							new Queen(piece.type, piece.color, piece.x, piece.y)));
         		}
@@ -151,7 +153,7 @@ public class Queen extends Piece{
         			}
             	}
         		// atac
-        		if(board.attackMove(x, y) == true && ok == 1) {
+        		if(board.attackMove(x, y, piece.color)  == true && ok == 1) {
 					moves.add(new Move(piece.x, piece.y, x, y, 
 							new Queen(piece.type, piece.color, piece.x, piece.y)));
         		}

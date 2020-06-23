@@ -12,6 +12,7 @@ public class Game {
 
 	states state;
 	colors engineColor;
+	static colors engineColorstatic;
 	long opTime; // timpul oponentului in microsecunde
 	long engineTime; // timpul engineului nostru in microsecunde
 
@@ -22,6 +23,7 @@ public class Game {
 		this.engineColor = engineColor;
 		this.opTime = opTime;
 		this.engineTime = engineTime;
+		engineColorstatic= engineColor;
 	}
 
 	public void setColor(colors Color) {

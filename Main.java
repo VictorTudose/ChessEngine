@@ -1,6 +1,7 @@
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collections;
 
 
 public class Main {
@@ -37,12 +38,13 @@ public class Main {
 					game.state = Game.states.GO;
 					// imi aleg o mutare din cele valide(cea mai buna, folosind negamax cu taietura alpha-beta)
 					// daca nu am mutari, dau resign
-					Pair<Integer, Move> p = negamaxAlphabeta(game.board, 5, Integer.MIN_VALUE, Integer.MAX_VALUE);
+					Pair<Integer, Move> p = negamaxAlphabeta(game.board, 1, Integer.MIN_VALUE, Integer.MAX_VALUE);
 					Move move = p.second;
 					if(move != null) {
 						int oldX = move.oldX, oldY = move.oldY, newX = move.newX, newY = move.newY;
-						game.board.makeMove(move);
-						System.out.println(Utils.positionsToMove(oldX, oldY, newX, newY));	
+						if(game.board.makeMove(move)) {
+							System.out.println(Utils.positionsToMove(oldX, oldY, newX, newY));							
+						}
 					} else {
 						System.out.println("resign");
 					}
@@ -51,23 +53,15 @@ public class Main {
 				}
 				
 				if(game.state == Game.states.GO) {
-					if (line.matches("^([a-h][1-8]+)+$")) {
-						// metoda actualizeaza board
+					if (line.matches("^([a-h][1-8]+)+$")||line.matches("^([a-h][1-8]+)+q$")) {
 						game.board.opponentMove(line);
-						/*
-						ArrayList<Move> moves = game.board.getAllMoves();
-						for(int i = 0; i < moves.size(); i++) {
-							Move mv = moves.get(i);
-							Utils.showTypeAndColor(mv.piece.type, mv.piece.color);
-							System.out.println("MUTARE" + Utils.positionsToMove(mv.oldX, mv.oldY, mv.newX, mv.newY));
-						}
-						*/
-						Pair<Integer, Move> p = negamaxAlphabeta(game.board, 5, Integer.MIN_VALUE, Integer.MAX_VALUE);
+						Pair<Integer, Move> p = negamaxAlphabeta(game.board, 1, Integer.MIN_VALUE, Integer.MAX_VALUE);
 						Move move = p.second;
 						if(move != null) {
 							int oldX = move.oldX, oldY = move.oldY, newX = move.newX, newY = move.newY;
-							game.board.makeMove(move);
-							System.out.println(Utils.positionsToMove(oldX, oldY, newX, newY));	
+							if(game.board.makeMove(move)) {
+								System.out.println(Utils.positionsToMove(oldX, oldY, newX, newY));									
+							}
 						} else {
 							System.out.println("resign");
 						}
@@ -76,15 +70,12 @@ public class Main {
 						game.state = Game.states.FORCE;
 					}
 				} else {
-					if (line.matches("^([a-h][1-8]+)+$")) {
+					if (line.matches("^([a-h][1-8]+)+$")||line.matches("^([a-h][1-8]+)+q$")) {
 						game.board.opponentMove(line);
 					}
 				}
 				if (line.contains("time")) {
 					String[] aux = line.split(" ");
-					/*340198 <first : Exception in thread "main" java.lang.NumberFormatException: For input string: "1-0"
-						340199 <first : 	at java.base/java.lang.NumberFormatException.forInputString(NumberFormatException.java:65)
-						340200 <first : 	at Main.main(Main.java:81)->linia de mai jos*/
 					game.setEngineTime(Long.parseLong(aux[1]));
 				}
 				if (line.contains("otim")) {
@@ -113,26 +104,29 @@ public class Main {
 	// pe care il recunoastem dupa culoarea care se afla in structura tablei,
 	// iar y este mutarea propriu-zisa
 	static Pair<Integer, Move> negamaxAlphabeta(Board init, int depth, int alfa, int beta) {
-		if (init.ended() || depth == 0) {
-			return new Pair<Integer, Move>(init.eval(init.engineColor), null);
+		if ( depth == 0) {
+			return new Pair<Integer, Move>(init.eval(), null);
 		}
 		Board clone = init.clone();
 		ArrayList<Move> moves = clone.getAllMoves();
+		Collections.shuffle(moves);
 		Move alfaMove = null;
 		if(moves.size() > 0) {
 			alfaMove = moves.get(moves.size()-1);
 		}
 		for (Move move : moves) {
-			clone.makeMove(move);
-			Board opResponse = clone.clone();
-			opResponse.engineColor = Utils.oppColors(clone.engineColor);
-			int score = -negamaxAlphabeta(opResponse, depth - 1, -beta, -alfa).first;
-			if (score > alfa) {
-				alfa = score;
-				alfaMove = move;
-			}
-			if (alfa >= beta) {
-				break;
+			Board newClone = init.clone();
+			if(newClone.makeMove(move)) {
+				Board opResponse = newClone.clone();
+				opResponse.engineColor = Utils.oppColors(newClone.engineColor);
+				int score = -negamaxAlphabeta(opResponse, depth - 1, -beta, -alfa).first;
+				if (score > alfa) {
+					alfa = score;
+					alfaMove = move;
+				}
+				if (alfa >= beta) {
+					break;
+				}
 			}
 		}
 		if(alfaMove != null)
